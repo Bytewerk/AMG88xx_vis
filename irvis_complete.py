@@ -10,6 +10,7 @@ SENSOR_RANGE = 8
 actual_array_size_x = SENSOR_RANGE * 2 - overlap_0x120_to_0x130
 actual_array_size_y = SENSOR_RANGE * 2 - overlap_0x110_to_0x120
 
+
 # data = numpy.zeros((8, 8), dtype=numpy.float32)
 data = numpy.zeros((16, 16), dtype=numpy.float32)
 data_resized = numpy.zeros((actual_array_size_x, actual_array_size_y), dtype=numpy.float32)
@@ -90,21 +91,21 @@ def merge_all_sensor_data():
 
     # write first sensor (0x120) in the big array of all 1 to 1
     start_x = SENSOR_RANGE
-    end_x = SENSOR_RANGE * 2 - 1
+    end_x = SENSOR_RANGE * 2
 
     start_y = SENSOR_RANGE
-    end_y = SENSOR_RANGE * 2 - 1
+    end_y = SENSOR_RANGE * 2
 
     for x in range(start_x, end_x):  # start from 8 to 15
         for y in range(start_y, end_y):
-            data[x][y] = data0x120[end_x - x][end_y - y]
+            data[x][y] = data0x120[end_x -1 - x][end_y -1 - y]
 
     # now write the sensor 0x110 to the array with the overlap to 0x120
     start_x = overlap_0x110_to_0x120
     end_x = overlap_0x110_to_0x120 + SENSOR_RANGE
 
     start_y = SENSOR_RANGE
-    end_y = SENSOR_RANGE * 2 - 1
+    end_y = SENSOR_RANGE * 2
 
     for x in range(start_x, end_x):  # start from 2 to 9
         for y in range(start_y, end_y):
@@ -118,7 +119,7 @@ def merge_all_sensor_data():
     # write sensor 0x130 to the array with the overlap to 0x120
 
     start_x = SENSOR_RANGE
-    end_x = SENSOR_RANGE * 2 - 1
+    end_x = SENSOR_RANGE * 2
 
     start_y = overlap_0x120_to_0x130
     end_y = SENSOR_RANGE + overlap_0x120_to_0x130
@@ -143,11 +144,11 @@ def merge_all_sensor_data():
     for x in range(start_x, end_x):  # start from 2 to 9
         for y in range(start_y, end_y):  # start from 2 to 9
             if y <= end_y - start_y or x <= end_x - start_x:
-                data[x][y] = data0x130[x - start_x][y - start_y]
+                data[x][y] = data0x100[x - start_x][y - start_y]
             else:
                 # merge the overlapping data with average
                 #    data[x][y] = (data[x][y] + data0x130[x - start_x][y - start_y]) / 2
-                data[x][y] = data0x130[x - start_x][y - start_y]
+                data[x][y] = data0x100[x - start_x][y - start_y]
 
 
 def resize_data(data_to_resize):
@@ -160,6 +161,14 @@ def resize_data(data_to_resize):
     for x in range(start_x, end_x):
         for y in range(start_y, end_y):
             data_resized[x][y] = data_to_resize[x + overlap_0x120_to_0x130][y + overlap_0x110_to_0x120]
+
+
+def print_array(print_array):
+    print("Starting printing....")
+    for x in range(0, actual_array_size_x):
+        for y in range(0, actual_array_size_y):
+            print(print_array[x][y])
+    print("End of print...")
 
 
 def main():
@@ -179,10 +188,11 @@ def main():
         img = cv2.resize(img, (512, 512))
         img = cv2.applyColorMap(img.astype(numpy.uint8), cv2.COLORMAP_JET)
         cv2.startWindowThread()
-        cv2.imshow('IR data', img)
+        #cv2.imshow('IR data', img)
         key = cv2.waitKey(10) & 0xFF
         if key == 27:
             break
+        #print_array(data_resized)
 
     cv2.destroyAllWindows()
 
