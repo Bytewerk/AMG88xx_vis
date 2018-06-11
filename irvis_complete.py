@@ -19,6 +19,9 @@ data0x110 = numpy.zeros((8, 8), dtype=numpy.float32)
 data0x120 = numpy.zeros((8, 8), dtype=numpy.float32)
 data0x130 = numpy.zeros((8, 8), dtype=numpy.float32)
 
+# offsets
+offset_0x100 = 25
+
 
 def process_can(bus):
     msg = bus.recv(0)
@@ -144,11 +147,11 @@ def merge_all_sensor_data():
     for x in range(start_x, end_x):  # start from 2 to 9
         for y in range(start_y, end_y):  # start from 2 to 9
             if y <= end_y - start_y or x <= end_x - start_x:
-                data[x][y] = data0x100[x - start_x][y - start_y]
+                data[x][y] = data0x100[x - start_x][y - start_y] - offset_0x100
             else:
                 # merge the overlapping data with average
                 #    data[x][y] = (data[x][y] + data0x130[x - start_x][y - start_y]) / 2
-                data[x][y] = data0x100[x - start_x][y - start_y]
+                data[x][y] = data0x100[x - start_x][y - start_y] - offset_0x100
 
 
 def resize_data(data_to_resize):
@@ -188,7 +191,7 @@ def main():
         img = cv2.resize(img, (512, 512))
         img = cv2.applyColorMap(img.astype(numpy.uint8), cv2.COLORMAP_JET)
         cv2.startWindowThread()
-        #cv2.imshow('IR data', img)
+        cv2.imshow('IR data', img)
         key = cv2.waitKey(10) & 0xFF
         if key == 27:
             break
