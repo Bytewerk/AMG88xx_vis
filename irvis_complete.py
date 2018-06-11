@@ -109,11 +109,12 @@ def merge_all_sensor_data():
 
     for x in range(start_x, end_x):  # start from 2 to 9
         for y in range(start_y, end_y):
-            if x <= end_x - start_x:
-                data[x][y] = data0x110[x - start_x][y - start_y]
-            else:
+            #if x <= end_x - start_x:
+            #    data[x][y] = data0x110[x - start_x][y - start_y]
+            #else:
                 # merge the overlapping data with average
-                data[x][y] = (data[x][y] + data0x110[x - start_x][y - start_y]) / 2
+            #    data[x][y] = (data[x][y] + data0x110[x - start_x][y - start_y]) / 2
+            data[x][y] = data0x110[x - start_x][y - start_y]
 
     # write sensor 0x130 to the array with the overlap to 0x120
 
@@ -125,11 +126,12 @@ def merge_all_sensor_data():
 
     for x in range(start_x, end_x):         # start from 8 to 15
         for y in range(start_y, end_y):     # start from 2 to 9
-            if y <= end_y - start_y:
-                data[x][y] = data0x130[x - start_x][y - start_y]
-            else:
+            #if y <= end_y - start_y:
+            #    data[x][y] = data0x130[x - start_x][y - start_y]
+            #else:
                 # merge the overlapping data with average
-                data[x][y] = (data[x][y] + data0x130[x - start_x][y - start_y]) / 2
+            #    data[x][y] = (data[x][y] + data0x130[x - start_x][y - start_y]) / 2
+            data[x][y] = data0x130[x - start_x][y - start_y]
 
     # write sensor 0x100 to the array with the overlap to 0x130 and 0x110
 
@@ -141,12 +143,12 @@ def merge_all_sensor_data():
 
     for x in range(start_x, end_x):         # start from 2 to 9
         for y in range(start_y, end_y):     # start from 2 to 9
-            if y <= end_y - start_y or x <= end_x - start_x:
-                data[x][y] = data0x130[x - start_x][y - start_y]
-            else:
+            #if y <= end_y - start_y or x <= end_x - start_x:
+            #    data[x][y] = data0x130[x - start_x][y - start_y]
+            #else:
                 # merge the overlapping data with average
-                data[x][y] = (data[x][y] + data0x130[x - start_x][y - start_y]) / 2
-
+            #    data[x][y] = (data[x][y] + data0x130[x - start_x][y - start_y]) / 2
+            data[x][y] = data0x130[x - start_x][y - start_y]
 
 def main():
     bus = can.interface.Bus('can0', bustype='socketcan_native')
