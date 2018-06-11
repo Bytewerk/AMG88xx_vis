@@ -41,19 +41,19 @@ def process_can_all(bus):
     num_sensor = msg.arbitration_id - 0x100
 
     if 0x30 <= num_sensor <= 0x37:  # look for which sensor it represent
-        num_sensor = num_sensor - 30
+        num_sensor = num_sensor - 0x30
         for i in range(8):
             data0x130[7 - num_sensor][7 - i] = msg.data[i]
         return True
 
     if 0x20 <= num_sensor <= 0x27:
-        num_sensor = num_sensor - 20
+        num_sensor = num_sensor - 0x20
         for i in range(8):
             data0x120[7 - num_sensor][7 - i] = msg.data[i]
         return True
 
     if 0x10 <= num_sensor <= 0x17:
-        num_sensor = num_sensor - 10
+        num_sensor = num_sensor - 0x10
         for i in range(8):
             data0x110[num_sensor][i] = msg.data[i]
         return True
