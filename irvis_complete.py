@@ -59,12 +59,17 @@ def process_can_all(bus):
         print("thermistor value 0x130:", thermistor[3], "°C")
 
     min_value = thermistor.min()
-
+    print("")
     offset_0x100 = thermistor[0] - min_value
+    print("offset for 0x100: ", offset_0x100, "°C")
     offset_0x110 = thermistor[1] - min_value
+    print("offset for 0x110: ", offset_0x110, "°C")
     offset_0x120 = thermistor[2] - min_value
+    print("offset for 0x120: ", offset_0x120, "°C")
     offset_0x130 = thermistor[3] - min_value
-
+    print("offset for 0x130: ", offset_0x130, "°C")
+    print("")
+    
     if not (0x100 <= msg.arbitration_id <= 0x137):
         return True
     num_sensor = msg.arbitration_id - 0x100
