@@ -131,7 +131,7 @@ def merge_all_sensor_data():
 
     for x in range(start_x, end_x):  # start from 8 to 15
         for y in range(start_y, end_y):
-            data[x][y] = data0x120[end_x - 1 - x][end_y - 1 - y] + offset_0x120
+            data[x][y] = data0x120[end_x - 1 - x][end_y - 1 - y] - offset_0x120
 
     # now write the sensor 0x110 to the array with the overlap to 0x120
     start_x = overlap_0x110_to_0x120
@@ -143,11 +143,11 @@ def merge_all_sensor_data():
     for x in range(start_x, end_x):  # start from 2 to 9
         for y in range(start_y, end_y):
             if x <= end_x - start_x:
-                data[x][y] = data0x110[x - start_x][y - start_y] + offset_0x110
+                data[x][y] = data0x110[x - start_x][y - start_y] - offset_0x110
             else:
                 # merge the overlapping data with average
                 #   data[x][y] = (data[x][y] + data0x110[x - start_x][y - start_y]) / 2
-                data[x][y] = data0x110[x - start_x][y - start_y] + offset_0x110
+                data[x][y] = data0x110[x - start_x][y - start_y] - offset_0x110
 
     # write sensor 0x130 to the array with the overlap to 0x120
 
@@ -160,11 +160,11 @@ def merge_all_sensor_data():
     for x in range(start_x, end_x):  # start from 8 to 15
         for y in range(start_y, end_y):  # start from 2 to 9
             if y <= end_y - start_y:
-                data[x][y] = data0x130[x - start_x][y - start_y] + offset_0x130
+                data[x][y] = data0x130[x - start_x][y - start_y] - offset_0x130
             else:
                 # merge the overlapping data with average
                 # data[x][y] = (data[x][y] + data0x130[x - start_x][y - start_y]) / 2
-                data[x][y] = data0x130[x - start_x][y - start_y] + offset_0x130
+                data[x][y] = data0x130[x - start_x][y - start_y] - offset_0x130
 
     # write sensor 0x100 to the array with the overlap to 0x130 and 0x110
 
@@ -177,11 +177,11 @@ def merge_all_sensor_data():
     for x in range(start_x, end_x):  # start from 2 to 9
         for y in range(start_y, end_y):  # start from 2 to 9
             if y <= end_y - start_y or x <= end_x - start_x:
-                data[x][y] = data0x100[x - start_x][y - start_y] + offset_0x100
+                data[x][y] = data0x100[x - start_x][y - start_y] - offset_0x100
             else:
                 # merge the overlapping data with average
                 #    data[x][y] = (data[x][y] + data0x130[x - start_x][y - start_y]) / 2
-                data[x][y] = data0x100[x - start_x][y - start_y] + offset_0x100
+                data[x][y] = data0x100[x - start_x][y - start_y] - offset_0x100
 
 
 def resize_data(data_to_resize):
