@@ -18,9 +18,13 @@ data0x100 = numpy.zeros((8, 8), dtype=numpy.float32)
 data0x110 = numpy.zeros((8, 8), dtype=numpy.float32)
 data0x120 = numpy.zeros((8, 8), dtype=numpy.float32)
 data0x130 = numpy.zeros((8, 8), dtype=numpy.float32)
+thermistor = numpy.zeros(4, dtype=numpy.float32)
 
 # offsets
-offset_0x100 = 25
+offset_0x100 = 0
+offset_0x110 = 0
+offset_0x120 = 0
+offset_0x130 = 0
 
 
 def process_can(bus):
@@ -42,17 +46,24 @@ def process_can_all(bus):
         return False
 
     if msg.arbitration_id == 0x10B:
-        thermistor = (((msg.data[0] & 0xF7)<<8) + msg.data[1]) * 0.0625
-        print("thermistor value 0x100:", thermistor, "°C")
+        thermistor[0] = (((msg.data[0] & 0xF7)<<8) + msg.data[1]) * 0.0625
+        print("thermistor value 0x100:", thermistor[0], "°C")
     if msg.arbitration_id == 0x11B:
-        thermistor = (((msg.data[0] & 0xF7) << 8) + msg.data[1]) * 0.0625
-        print("thermistor value 0x110:", thermistor, "°C")
+        thermistor[1] = (((msg.data[0] & 0xF7) << 8) + msg.data[1]) * 0.0625
+        print("thermistor value 0x110:", thermistor[1], "°C")
     if msg.arbitration_id == 0x12B:
-        thermistor = (((msg.data[0] & 0xF7) << 8) + msg.data[1]) * 0.0625
-        print("thermistor value 0x120:", thermistor, "°C")
+        thermistor[2] = (((msg.data[0] & 0xF7) << 8) + msg.data[1]) * 0.0625
+        print("thermistor value 0x120:", thermistor[2], "°C")
     if msg.arbitration_id == 0x13B:
-        thermistor = (((msg.data[0] & 0xF7) << 8) + msg.data[1]) * 0.0625
-        print("thermistor value 0x130:", thermistor, "°C")
+        thermistor[3] = (((msg.data[0] & 0xF7) << 8) + msg.data[1]) * 0.0625
+        print("thermistor value 0x130:", thermistor[3], "°C")
+
+    min_value = thermistor.min()
+
+    offset_0x100 = thermistor[0] - min_value
+    offset_0x110 = thermistor[1] - min_value
+    offset_0x120 = thermistor[2] - min_value
+    offset_0x130 = thermistor[3] - min_value
 
     if not (0x100 <= msg.arbitration_id <= 0x137):
         return True
@@ -115,7 +126,7 @@ def merge_all_sensor_data():
 
     for x in range(start_x, end_x):  # start from 8 to 15
         for y in range(start_y, end_y):
-            data[x][y] = data0x120[end_x -1 - x][end_y -1 - y]
+            data[x][y] = data0x120[end_x -1 - x][end_y -1 - y] - offset_0x120
 
     # now write the sensor 0x110 to the array with the overlap to 0x120
     start_x = overlap_0x110_to_0x120
@@ -127,11 +138,11 @@ def merge_all_sensor_data():
     for x in range(start_x, end_x):  # start from 2 to 9
         for y in range(start_y, end_y):
             if x <= end_x - start_x:
-                data[x][y] = data0x110[x - start_x][y - start_y]
+                data[x][y] = data0x110[x - start_x][y - start_y] - offset_0x110
             else:
                 # merge the overlapping data with average
                 #   data[x][y] = (data[x][y] + data0x110[x - start_x][y - start_y]) / 2
-                data[x][y] = data0x110[x - start_x][y - start_y]
+                data[x][y] = data0x110[x - start_x][y - start_y] - offset_0x110
 
     # write sensor 0x130 to the array with the overlap to 0x120
 
@@ -144,11 +155,11 @@ def merge_all_sensor_data():
     for x in range(start_x, end_x):  # start from 8 to 15
         for y in range(start_y, end_y):  # start from 2 to 9
             if y <= end_y - start_y:
-                data[x][y] = data0x130[x - start_x][y - start_y]
+                data[x][y] = data0x130[x - start_x][y - start_y] - offset_0x130
             else:
                 # merge the overlapping data with average
                 # data[x][y] = (data[x][y] + data0x130[x - start_x][y - start_y]) / 2
-                data[x][y] = data0x130[x - start_x][y - start_y]
+                data[x][y] = data0x130[x - start_x][y - start_y] - offset_0x130
 
     # write sensor 0x100 to the array with the overlap to 0x130 and 0x110
 
