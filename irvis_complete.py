@@ -205,7 +205,7 @@ def main():
         img = cv2.resize(img, (512, 512))
         img = cv2.applyColorMap(img.astype(numpy.uint8), cv2.COLORMAP_JET)
         cv2.startWindowThread()
-        #cv2.imshow('IR data', img)
+        cv2.imshow('IR data', img)
         key = cv2.waitKey(10) & 0xFF
         if key == 27:
             break
