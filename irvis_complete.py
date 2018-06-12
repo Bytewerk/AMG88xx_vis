@@ -40,6 +40,20 @@ def process_can_all(bus):
     msg = bus.recv(0)
     if msg is None:
         return False
+
+    if msg.arbitration_id == 0x10B:
+        thermistor = (((msg.data[0] & 0xF7)<<8) + msg.data[1]) * 0.0625
+        print("thermistor value 0x100:", thermistor, "°C")
+    if msg.arbitration_id == 0x11B:
+        thermistor = (((msg.data[0] & 0xF7) << 8) + msg.data[1]) * 0.0625
+        print("thermistor value 0x110:", thermistor, "°C")
+    if msg.arbitration_id == 0x12B:
+        thermistor = (((msg.data[0] & 0xF7) << 8) + msg.data[1]) * 0.0625
+        print("thermistor value 0x120:", thermistor, "°C")
+    if msg.arbitration_id == 0x13B:
+        thermistor = (((msg.data[0] & 0xF7) << 8) + msg.data[1]) * 0.0625
+        print("thermistor value 0x130:", thermistor, "°C")
+
     if not (0x100 <= msg.arbitration_id <= 0x137):
         return True
     num_sensor = msg.arbitration_id - 0x100
@@ -191,7 +205,7 @@ def main():
         img = cv2.resize(img, (512, 512))
         img = cv2.applyColorMap(img.astype(numpy.uint8), cv2.COLORMAP_JET)
         cv2.startWindowThread()
-        cv2.imshow('IR data', img)
+        #cv2.imshow('IR data', img)
         key = cv2.waitKey(10) & 0xFF
         if key == 27:
             break
