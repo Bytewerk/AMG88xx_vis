@@ -83,7 +83,8 @@ def process_can_all(bus):
     if 0x20 <= num_sensor <= 0x27:
         num_sensor = num_sensor - 0x20
         for i in range(8):
-            data0x100[7 - num_sensor][7 - i] = msg.data[i]
+            #data0x100[7 - num_sensor][7 - i] = msg.data[i]
+            data0x100[num_sensor][i] = msg.data[i]
         return True
 
     if 0x10 <= num_sensor <= 0x17:
